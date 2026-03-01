@@ -1,65 +1,189 @@
-import Image from "next/image";
+"use client";
+
+import { useState } from "react";
+
+const CITY_DATA = {
+  Saigon: {
+    region: "South",
+    activities: [
+      "Coffee crawl in District 1",
+      "Street food mission",
+      "Rooftop sunset",
+      "Spa / recovery day"
+    ],
+    restaurants: [
+      "Local bánh mì stall",
+      "Cơm tấm spot",
+      "Rooftop bar",
+      "Hủ tiếu vendor"
+    ],
+    packing: ["Breathable shirts", "Shorts", "Hydration plan"]
+  },
+  Hanoi: {
+    region: "North",
+    activities: [
+      "Old Quarter walk",
+      "Egg coffee stop",
+      "Temple visit",
+      "Night market"
+    ],
+    restaurants: [
+      "Phở breakfast",
+      "Bún chả lunch",
+      "Egg coffee café",
+      "Street snack crawl"
+    ],
+    packing: ["Light jacket", "Layer for cool mornings"]
+  },
+  "Ha Giang": {
+    region: "North",
+    activities: [
+      "Motorbike loop day",
+      "Ma Pi Leng pass",
+      "Village stops",
+      "Homestay dinner"
+    ],
+    restaurants: [
+      "Homestay meal",
+      "Roadside noodle stop",
+      "Tea stop"
+    ],
+    packing: ["Rain jacket", "Neck buff", "Gloves", "Secure phone mount"]
+  },
+  "Ninh Binh": {
+    region: "North",
+    activities: [
+      "Boat ride",
+      "Bike countryside",
+      "Hang Mua viewpoint"
+    ],
+    restaurants: [
+      "Local goat dish",
+      "Brick Coffee",
+      "Regional curry"
+    ],
+    packing: ["Sun protection", "Comfortable shoes"]
+  }
+};
 
 export default function Home() {
+  const [segments, setSegments] = useState([{ city: "Saigon", start: "", end: "" }]);
+  const [results, setResults] = useState<any>(null);
+
+  function addSegment() {
+    setSegments([...segments, { city: "Hanoi", start: "", end: "" }]);
+  }
+
+  function updateSegment(index: number, field: string, value: string) {
+    const updated = [...segments];
+    (updated[index] as any)[field] = value;
+    setSegments(updated);
+  }
+
+  function generatePlan() {
+    let packingSet = new Set([
+      "Passport",
+      "Wallet",
+      "Phone + charger",
+      "Power bank",
+      "Travel adapter",
+      "Toiletries",
+      "Med kit"
+    ]);
+
+    let cityPlans: any[] = [];
+
+    segments.forEach((seg) => {
+      if (!seg.start || !seg.end) return;
+
+      const cityData = (CITY_DATA as any)[seg.city];
+
+      cityData.packing.forEach((item: string) => packingSet.add(item));
+
+      cityPlans.push({
+        city: seg.city,
+        start: seg.start,
+        end: seg.end,
+        activities: cityData.activities,
+        restaurants: cityData.restaurants
+      });
+    });
+
+    setResults({
+      packing: Array.from(packingSet),
+      cities: cityPlans
+    });
+  }
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <div style={{ padding: 40, maxWidth: 900, margin: "0 auto" }}>
+      <h1>Trip Architect</h1>
+      <p>Enter cities and dates. Get smart packing + suggestions.</p>
+
+      {segments.map((seg, i) => (
+        <div key={i} style={{ marginBottom: 20 }}>
+          <select
+            value={seg.city}
+            onChange={(e) => updateSegment(i, "city", e.target.value)}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            {Object.keys(CITY_DATA).map((city) => (
+              <option key={city}>{city}</option>
+            ))}
+          </select>
+
+          <input
+            type="date"
+            value={seg.start}
+            onChange={(e) => updateSegment(i, "start", e.target.value)}
+            style={{ marginLeft: 10 }}
+          />
+
+          <input
+            type="date"
+            value={seg.end}
+            onChange={(e) => updateSegment(i, "end", e.target.value)}
+            style={{ marginLeft: 10 }}
+          />
         </div>
-      </main>
+      ))}
+
+      <button onClick={addSegment}>+ Add Segment</button>
+      <button onClick={generatePlan} style={{ marginLeft: 10 }}>
+        Generate Plan
+      </button>
+
+      {results && (
+        <div style={{ marginTop: 40 }}>
+          <h2>Smart Packing List</h2>
+          <ul>
+            {results.packing.map((item: string, i: number) => (
+              <li key={i}>{item}</li>
+            ))}
+          </ul>
+
+          {results.cities.map((city: any, i: number) => (
+            <div key={i} style={{ marginTop: 30 }}>
+              <h2>
+                {city.city} ({city.start} → {city.end})
+              </h2>
+
+              <strong>Activities</strong>
+              <ul>
+                {city.activities.map((a: string, j: number) => (
+                  <li key={j}>{a}</li>
+                ))}
+              </ul>
+
+              <strong>Restaurants</strong>
+              <ul>
+                {city.restaurants.map((r: string, j: number) => (
+                  <li key={j}>{r}</li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
