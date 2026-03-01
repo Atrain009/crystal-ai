@@ -97,7 +97,6 @@ export default function Home() {
       if (!seg.start || !seg.end) return;
 
       const cityData = (CITY_DATA as any)[seg.city];
-
       cityData.packing.forEach((item: string) => packingSet.add(item));
 
       cityPlans.push({
@@ -116,74 +115,121 @@ export default function Home() {
   }
 
   return (
-    <div style={{ padding: 40, maxWidth: 900, margin: "0 auto" }}>
-      <h1>Trip Architect</h1>
-      <p>Enter cities and dates. Get smart packing + suggestions.</p>
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white text-slate-900">
+      <div className="max-w-4xl mx-auto px-6 py-16">
 
-      {segments.map((seg, i) => (
-        <div key={i} style={{ marginBottom: 20 }}>
-          <select
-            value={seg.city}
-            onChange={(e) => updateSegment(i, "city", e.target.value)}
-          >
-            {Object.keys(CITY_DATA).map((city) => (
-              <option key={city}>{city}</option>
-            ))}
-          </select>
-
-          <input
-            type="date"
-            value={seg.start}
-            onChange={(e) => updateSegment(i, "start", e.target.value)}
-            style={{ marginLeft: 10 }}
-          />
-
-          <input
-            type="date"
-            value={seg.end}
-            onChange={(e) => updateSegment(i, "end", e.target.value)}
-            style={{ marginLeft: 10 }}
-          />
+        {/* Header */}
+        <div className="mb-12">
+          <h1 className="text-4xl font-semibold tracking-tight">
+            Trip Architect
+          </h1>
+          <p className="text-slate-600 mt-3">
+            Enter cities and dates. Get intelligent packing, activities, and restaurant suggestions.
+          </p>
         </div>
-      ))}
 
-      <button onClick={addSegment}>+ Add Segment</button>
-      <button onClick={generatePlan} style={{ marginLeft: 10 }}>
-        Generate Plan
-      </button>
+        {/* Input Card */}
+        <div className="bg-white shadow-sm rounded-2xl p-8 border border-slate-100 mb-10">
+          <div className="space-y-6">
 
-      {results && (
-        <div style={{ marginTop: 40 }}>
-          <h2>Smart Packing List</h2>
-          <ul>
-            {results.packing.map((item: string, i: number) => (
-              <li key={i}>{item}</li>
+            {segments.map((seg, i) => (
+              <div key={i} className="grid md:grid-cols-3 gap-4">
+                <select
+                  value={seg.city}
+                  onChange={(e) => updateSegment(i, "city", e.target.value)}
+                  className="rounded-xl border border-slate-200 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-slate-300"
+                >
+                  {Object.keys(CITY_DATA).map((city) => (
+                    <option key={city}>{city}</option>
+                  ))}
+                </select>
+
+                <input
+                  type="date"
+                  value={seg.start}
+                  onChange={(e) => updateSegment(i, "start", e.target.value)}
+                  className="rounded-xl border border-slate-200 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-slate-300"
+                />
+
+                <input
+                  type="date"
+                  value={seg.end}
+                  onChange={(e) => updateSegment(i, "end", e.target.value)}
+                  className="rounded-xl border border-slate-200 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-slate-300"
+                />
+              </div>
             ))}
-          </ul>
 
-          {results.cities.map((city: any, i: number) => (
-            <div key={i} style={{ marginTop: 30 }}>
-              <h2>
-                {city.city} ({city.start} → {city.end})
-              </h2>
+            <div className="flex gap-4 pt-4">
+              <button
+                onClick={addSegment}
+                className="px-5 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 transition"
+              >
+                + Add Segment
+              </button>
 
-              <strong>Activities</strong>
-              <ul>
-                {city.activities.map((a: string, j: number) => (
-                  <li key={j}>{a}</li>
-                ))}
-              </ul>
+              <button
+                onClick={generatePlan}
+                className="px-6 py-2 rounded-xl bg-slate-900 text-white hover:bg-slate-800 transition"
+              >
+                Generate Plan
+              </button>
+            </div>
 
-              <strong>Restaurants</strong>
-              <ul>
-                {city.restaurants.map((r: string, j: number) => (
-                  <li key={j}>{r}</li>
+          </div>
+        </div>
+
+        {/* Results */}
+        {results && (
+          <div className="space-y-10">
+
+            {/* Packing */}
+            <div className="bg-white rounded-2xl p-8 shadow-sm border border-slate-100">
+              <h2 className="text-xl font-semibold mb-4">Smart Packing List</h2>
+              <ul className="grid md:grid-cols-2 gap-2 text-slate-700">
+                {results.packing.map((item: string, i: number) => (
+                  <li key={i}>• {item}</li>
                 ))}
               </ul>
             </div>
-          ))}
-        </div>
-      )}
+
+            {/* City Plans */}
+            {results.cities.map((city: any, i: number) => (
+              <div key={i} className="bg-white rounded-2xl p-8 shadow-sm border border-slate-100">
+                <h2 className="text-xl font-semibold mb-1">
+                  {city.city}
+                </h2>
+                <p className="text-sm text-slate-500 mb-6">
+                  {city.start} → {city.end}
+                </p>
+
+                <div className="grid md:grid-cols-2 gap-8">
+                  <div>
+                    <h3 className="font-medium mb-2">Activities</h3>
+                    <ul className="space-y-1 text-slate-700">
+                      {city.activities.map((a: string, j: number) => (
+                        <li key={j}>• {a}</li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h3 className="font-medium mb-2">Restaurants</h3>
+                    <ul className="space-y-1 text-slate-700">
+                      {city.restaurants.map((r: string, j: number) => (
+                        <li key={j}>• {r}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+
+              </div>
+            ))}
+
+          </div>
+        )}
+
+      </div>
     </div>
   );
 }
